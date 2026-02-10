@@ -122,9 +122,18 @@ async function init() {
   const turnsParam = param("maxturns");
   if (turnsParam) maxTurns = parseInt(turnsParam, 10);
 
-  // Load personas JSON (hosted alongside this file)
+  // Load personas from the opposite political party
+  // party param = the respondent's party, so we load the other side
   try {
-    const res = await fetch("personas.json");
+    const respondentParty = (param("party") || "").toLowerCase();
+    let file = "personas.json"; // fallback
+    if (respondentParty === "republican") {
+      file = "personas_democrat.json";
+    } else if (respondentParty === "democrat") {
+      file = "personas_republican.json";
+    }
+
+    const res = await fetch(file);
     const personas = await res.json();
     const pids = Object.keys(personas);
 
