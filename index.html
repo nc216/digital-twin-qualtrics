@@ -128,7 +128,7 @@ async function init() {
   // party param = the respondent's party, so we load the other side
   try {
     const respondentParty = (param("party") || "").toLowerCase();
-    let file = "personas.json"; // fallback
+    let file = "personas_democrat_full.json"; // fallback
     if (respondentParty === "republican") {
       file = "personas_democrat_full.json";
     } else if (respondentParty === "democrat") {
