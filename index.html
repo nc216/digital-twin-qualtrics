@@ -89,6 +89,8 @@ const PROXY_URL = "https://script.google.com/macros/s/AKfycbxUCOU5JqXGabGyKN7lcv
 
 let persona = null;
 let personaId = null;
+let personaGreenScore = null;
+let personaGreenDistance = null;
 let history = [];
 let turnCount = 0;
 let maxTurns = 20;
@@ -128,23 +130,27 @@ async function init() {
     const respondentParty = (param("party") || "").toLowerCase();
     let file = "personas.json"; // fallback
     if (respondentParty === "republican") {
-      file = "personas_democrat.json";
+      file = "personas_democrat_full.json";
     } else if (respondentParty === "democrat") {
-      file = "personas_republican.json";
+      file = "personas_republican_full.json";
     }
 
     const res = await fetch(file);
-    const personas = await res.json();
-    const pids = Object.keys(personas);
+    const personasArr = await res.json(); // array of {pid, persona, green_score, party_mean_green, green_distance}
 
     // Pick persona: from URL param or random
     const pidParam = param("pid");
-    if (pidParam && personas[pidParam]) {
-      personaId = pidParam;
-    } else {
-      personaId = pids[Math.floor(Math.random() * pids.length)];
+    let entry;
+    if (pidParam) {
+      entry = personasArr.find(p => String(p.pid) === String(pidParam));
     }
-    persona = personas[personaId];
+    if (!entry) {
+      entry = personasArr[Math.floor(Math.random() * personasArr.length)];
+    }
+    personaId = entry.pid;
+    persona = entry.persona;
+    personaGreenScore = entry.green_score;
+    personaGreenDistance = entry.green_distance;
 
     headerEl.textContent = "Conversation (Persona #" + personaId + ")";
     statusEl.textContent = "Turn 0 / " + maxTurns;
@@ -220,7 +226,9 @@ function endChat() {
       session_id: personaId + "_" + Date.now(),
       persona_id: personaId,
       transcript: JSON.stringify(history),
-      turn_count: turnCount
+      turn_count: turnCount,
+      green_score: personaGreenScore,
+      green_distance: personaGreenDistance
     }, "*");
   } catch (_) {}
 }
