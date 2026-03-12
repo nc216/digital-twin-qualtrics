@@ -63,6 +63,14 @@
     #send-btn:hover { background: #57a857; }
     #send-btn:disabled { background: #aaa; cursor: not-allowed; }
     #status { display: none; }
+    #done-area {
+      text-align: center; padding: 6px 16px 14px 16px; display: none;
+    }
+    #done-btn {
+      background: none; border: 1px solid #bbb; border-radius: 6px;
+      color: #666; font-size: 14px; padding: 6px 20px; cursor: pointer;
+    }
+    #done-btn:hover { background: #f5f5f5; }
   </style>
 </head>
 <body>
@@ -74,6 +82,9 @@
     <div id="input-area">
       <input id="user-input" type="text" placeholder="Type here" autocomplete="off" disabled />
       <button id="send-btn" disabled>Send</button>
+    </div>
+    <div id="done-area">
+      <button id="done-btn">Done with conversation</button>
     </div>
     <div id="status">Loading persona...</div>
   </div>
@@ -88,6 +99,7 @@ let personaGreenDistance = null;
 let history = [];
 let turnCount = 0;
 let maxTurns = 20;
+let minTurns = 3;
 let finished = false;
 
 const messagesEl = document.getElementById("chat-messages");
@@ -96,6 +108,8 @@ const sendBtn = document.getElementById("send-btn");
 const typingEl = document.getElementById("typing");
 const statusEl = document.getElementById("status");
 const headerEl = document.getElementById("chat-header");
+const doneAreaEl = document.getElementById("done-area");
+const doneBtnEl = document.getElementById("done-btn");
 
 function param(name) {
   return new URLSearchParams(window.location.search).get(name);
@@ -198,6 +212,9 @@ async function sendMessage() {
       endChat();
       return;
     }
+    if (turnCount >= minTurns) {
+      doneAreaEl.style.display = "block";
+    }
     setEnabled(true);
     inputEl.focus();
   } catch (err) {
@@ -210,6 +227,7 @@ async function sendMessage() {
 function endChat() {
   finished = true;
   setEnabled(false);
+  doneAreaEl.style.display = "none";
   addMsg("system", "Conversation complete. Thank you!");
   statusEl.textContent = "Finished (" + turnCount + " turns)";
 
@@ -227,6 +245,7 @@ function endChat() {
   } catch (_) {}
 }
 
+doneBtnEl.addEventListener("click", endChat);
 sendBtn.addEventListener("click", sendMessage);
 inputEl.addEventListener("keydown", function(e) {
   if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
