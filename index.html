@@ -156,7 +156,7 @@ async function sendMessage() {
 
   // Build system prompt with persona
   const systemPrompt =
-    "You are roleplaying as a specific person. You must stay in character at all times and respond as this person would, based on their profile below. Do not break character. Do not reveal that you are an AI. Respond naturally and conversationally.\n\n--- PERSONA PROFILE ---\n" +
+    "You are roleplaying as a specific person. You must stay in character at all times and respond as this person would, based on their profile below. Do not break character. Do not reveal that you are an AI. Respond naturally and conversationally.\n\nAge ranges in the profile are survey buckets — if the profile says '65+', pick and consistently use a specific realistic age (e.g. 67, 71, 78) for this person. Similarly, '18-29' should become a specific age like 24, '30-49' like 38, '50-64' like 57.\n\n--- PERSONA PROFILE ---\n" +
     persona +
     "\n--- END PERSONA PROFILE ---";
 
