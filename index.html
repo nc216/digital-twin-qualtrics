@@ -114,19 +114,10 @@ function setEnabled(on) {
 }
 
 async function init() {
-  // Load personas from the opposite political party
-  // party param = the respondent's party, so we load the other side
+  // Load older adult personas (65+) for age-based study
   try {
-    const respondentParty = (param("party") || "").toLowerCase();
-    let file = "personas_democrat_full.json"; // fallback
-    if (respondentParty === "republican") {
-      file = "personas_democrat_full.json";
-    } else if (respondentParty === "democrat") {
-      file = "personas_republican_full.json";
-    }
-
-    const res = await fetch(file);
-    const personasArr = await res.json(); // array of {pid, persona, green_score, party_mean_green, green_distance}
+    const res = await fetch("personas_older_full.json");
+    const personasArr = await res.json(); // array of {pid, persona, green_score, age_mean_green, green_distance}
 
     // Pick persona: from URL param or random
     const pidParam = param("pid");
