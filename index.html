@@ -134,11 +134,23 @@ async function init() {
     personaGreenDistance = entry.green_distance;
 
     headerEl.textContent = "Conversation (Persona #" + personaId + ")";
+
+    // Send persona metadata to Qualtrics immediately — before chat begins
+    window.parent.postMessage({
+      type: "chatbot_transcript",
+      session_id: personaId + "_" + Date.now(),
+      persona_id: personaId,
+      transcript: "",
+      turn_count: 0,
+      green_score: personaGreenScore,
+      green_distance: personaGreenDistance
+    }, "*");
+
     addMsg("assistant", "Hi! Feel free to ask me anything.");
     setEnabled(true);
     inputEl.focus();
 
-    // Auto-end after 10 minutes to ensure postMessage fires before Qualtrics advances
+    // Also send updated transcript when chat ends (10-min timer)
     setTimeout(function() { if (!finished) endChat(); }, 10 * 60 * 1000);
   } catch (err) {
     addMsg("system", "Error loading personas: " + err.message);
